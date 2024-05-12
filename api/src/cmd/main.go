@@ -15,6 +15,7 @@ func main() {
 	logger.Info("hello slog", "name", "slog")
 	fmt.Println(config.Config.Host)
 
+	logger.Info("サーバー起動中...")
 	mux := router.NewRouter()
 	err := http.ListenAndServe(":8080", mux)
 	if err != nil {
