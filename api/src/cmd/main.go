@@ -7,6 +7,7 @@ import (
 	"os"
 
 	config "github.com/shinya-ac/TodoAPI/configs"
+	"github.com/shinya-ac/TodoAPI/internal/infrastructure/router"
 )
 
 func main() {
@@ -14,13 +15,9 @@ func main() {
 	logger.Info("hello slog", "name", "slog")
 	fmt.Println(config.Config.Host)
 
-	http.HandleFunc("/healthcheck", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "ok")
-	})
-
-	err := http.ListenAndServe(":8080", nil)
+	mux := router.NewRouter()
+	err := http.ListenAndServe(":8080", mux)
 	if err != nil {
-		fmt.Println("サーバー起動エラー：", err)
-		return
+		logger.Error("サーバー起動エラー：", err)
 	}
 }
