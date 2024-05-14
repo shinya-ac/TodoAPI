@@ -8,7 +8,12 @@ import (
 )
 
 type ConfigList struct {
-	Host string
+	Host       string
+	DBUser     string
+	DBPassword string
+	DBHost     string
+	DBPort     string
+	DBName     string
 }
 
 var Config ConfigList
@@ -21,6 +26,11 @@ func init() {
 	}
 
 	Config = ConfigList{
-		Host: cfg.Section("db").Key("host").String(),
+		Host:       cfg.Section("db").Key("host").String(),
+		DBUser:     cfg.Section("db").Key("user").String(),
+		DBPassword: cfg.Section("db").Key("password").String(),
+		DBHost:     cfg.Section("db").Key("host").String(),
+		DBPort:     cfg.Section("db").Key("port").String(),
+		DBName:     cfg.Section("db").Key("name").String(),
 	}
 }
