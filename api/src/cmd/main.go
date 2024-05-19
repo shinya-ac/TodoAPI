@@ -1,24 +1,20 @@
 package main
 
 import (
-	"fmt"
-	"log/slog"
-	"net/http"
-	"os"
+	"context"
 
 	config "github.com/shinya-ac/TodoAPI/configs"
-	"github.com/shinya-ac/TodoAPI/internal/infrastructure/router"
+	"github.com/shinya-ac/TodoAPI/infrastructure/mysql/db"
+	"github.com/shinya-ac/TodoAPI/pkg/logging"
+	"github.com/shinya-ac/TodoAPI/server"
 )
 
 func main() {
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
-	logger.Info("hello slog", "name", "slog")
-	fmt.Println(config.Config.Host)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	logging.InitLogger()
 
-	logger.Info("サーバー起動中...")
-	mux := router.NewRouter()
-	err := http.ListenAndServe(":8080", mux)
-	if err != nil {
-		logger.Error("サーバー起動エラー：", err)
-	}
+	db.NewMainDB(config.Config)
+
+	server.Run(ctx, config.Config)
 }
