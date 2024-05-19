@@ -10,7 +10,7 @@ import (
 )
 
 type Task struct {
-	Id      uuid.UUID
+	Id      string
 	Title   string
 	Content string
 }
@@ -29,19 +29,19 @@ func NewTask(
 		logging.Logger.Error("説明文の値が不正", "error", err)
 		return nil, err
 	}
-	id, err := uuid.NewUUID()
+	id, err := uuid.NewRandom()
 	if err != nil {
 		logging.Logger.Error("UUIDの生成に失敗", "error", err)
 		return nil, err
 	}
 	return &Task{
-		Id:      id,
+		Id:      id.String(),
 		Title:   Title,
 		Content: Content,
 	}, nil
 }
 
-func (t *Task) GetId() uuid.UUID {
+func (t *Task) GetId() string {
 	return t.Id
 }
 

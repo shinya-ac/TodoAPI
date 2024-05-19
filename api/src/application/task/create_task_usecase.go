@@ -3,8 +3,6 @@ package task
 import (
 	"context"
 
-	"github.com/google/uuid"
-
 	taskDomain "github.com/shinya-ac/TodoAPI/domain/task"
 	"github.com/shinya-ac/TodoAPI/pkg/logging"
 )
@@ -27,7 +25,7 @@ type CreateTaskUseCaseInputDto struct {
 }
 
 type CreateTaskUseCaseOutputDto struct {
-	Id uuid.UUID
+	Id string
 }
 
 func (uc *CreateTaskUseCase) Run(

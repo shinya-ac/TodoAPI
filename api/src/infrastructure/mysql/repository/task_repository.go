@@ -17,9 +17,10 @@ func NewTaskRepository(db *sql.DB) task.TaskRepository {
 }
 
 func (r *taskRepository) Create(ctx context.Context, task *task.Task) error {
-	query := `INSERT INTO tasks (title, content) VALUES(?, ?)`
+	logging.Logger.Info("Create実行", "task:", task)
+	query := `INSERT INTO tasks (id, title, content) VALUES(?, ?, ?)`
 
-	_, err := r.db.ExecContext(ctx, query, task.Title, task.Content)
+	_, err := r.db.ExecContext(ctx, query, task.Id, task.Title, task.Content)
 	if err != nil {
 		logging.Logger.Error("SQL実行に失敗", "error", err)
 		return err
