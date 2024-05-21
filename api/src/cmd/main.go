@@ -7,7 +7,14 @@ import (
 	"github.com/shinya-ac/TodoAPI/infrastructure/mysql/db"
 	"github.com/shinya-ac/TodoAPI/pkg/logging"
 	"github.com/shinya-ac/TodoAPI/server"
+
+	_ "github.com/shinya-ac/TodoAPI/docs"
 )
+
+// @title           Todo API
+// @version         1.0
+// @description     RESTful API for TodoApp
+// @termsOfService  localhost:8080
 
 func main() {
 	logging.InitLogger()

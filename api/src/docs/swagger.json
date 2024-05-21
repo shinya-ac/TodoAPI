@@ -1,0 +1,73 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "RESTful API for TodoApp",
+        "title": "Todo API",
+        "termsOfService": "localhost:8080",
+        "contact": {},
+        "version": "1.0"
+    },
+    "paths": {
+        "/v1/task": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Task"
+                ],
+                "summary": "Taskを登録する",
+                "parameters": [
+                    {
+                        "description": "Task登録",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/task.CreateTaskParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/task.createTaskResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "task.CreateTaskParams": {
+            "type": "object",
+            "required": [
+                "content",
+                "title"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "example": "「達人に学ぶクリーンアーキテクチャp100~105」までを読む"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "読書"
+                }
+            }
+        },
+        "task.createTaskResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "4082ed31-263c-40ec-9d41-e9d274c6bca8"
+                }
+            }
+        }
+    }
+}
