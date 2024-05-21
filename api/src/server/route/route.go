@@ -9,12 +9,16 @@ import (
 	"github.com/shinya-ac/TodoAPI/presentation/health_handler"
 	"github.com/shinya-ac/TodoAPI/presentation/settings"
 	taskPre "github.com/shinya-ac/TodoAPI/presentation/task"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 )
 
 func InitRoute(api *ginpkg.Engine) {
 	api.Use(settings.ErrorHandler())
 	v1 := api.Group("/v1")
 	v1.GET("/health", health_handler.HealthCheck)
+	v1.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	{
 		taskRoute(v1)

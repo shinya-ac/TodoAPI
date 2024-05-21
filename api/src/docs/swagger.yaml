@@ -1,0 +1,48 @@
+definitions:
+  task.CreateTaskParams:
+    properties:
+      content:
+        example: 「達人に学ぶクリーンアーキテクチャp100~105」までを読む
+        type: string
+      title:
+        example: 読書
+        type: string
+    required:
+    - content
+    - title
+    type: object
+  task.createTaskResponse:
+    properties:
+      id:
+        example: 4082ed31-263c-40ec-9d41-e9d274c6bca8
+        type: string
+    type: object
+info:
+  contact: {}
+  description: RESTful API for TodoApp
+  termsOfService: localhost:8080
+  title: Todo API
+  version: "1.0"
+paths:
+  /v1/task:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Task登録
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/task.CreateTaskParams'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/task.createTaskResponse'
+      summary: Taskを登録する
+      tags:
+      - Task
+swagger: "2.0"

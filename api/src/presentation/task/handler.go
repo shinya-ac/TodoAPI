@@ -21,6 +21,14 @@ func NewHandler(
 	}
 }
 
+// CreateTask godoc
+// @Summary Taskを登録する
+// @Tags Task
+// @Accept json
+// @Produce json
+// @Param request body CreateTaskParams true "Task登録"
+// @Success 201 {object} createTaskResponse
+// @Router /v1/task [post]
 func (h handler) CreateTask(ctx *gin.Context) {
 	logging.Logger.Info("CreateTaskエンドポイント実行開始")
 	var params CreateTaskParams
