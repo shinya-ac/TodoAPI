@@ -31,6 +31,7 @@ func GetDB() *sql.DB {
 func NewMainDB(cnf config.ConfigList) {
 	once.Do(func() {
 		var err error
+		logging.Logger.Info("DBHost:", "", cnf.DBHost)
 		dbcon, err := connect(
 			cnf.DBUser,
 			cnf.DBPassword,
