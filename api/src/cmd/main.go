@@ -10,11 +10,16 @@ import (
 )
 
 func main() {
+	logging.InitLogger()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	logging.InitLogger()
 
-	db.NewMainDB(config.Config)
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		logging.Logger.Error("configの読み込みに失敗", "error", err)
+	}
 
-	server.Run(ctx, config.Config)
+	db.NewMainDB(cfg)
+
+	server.Run(ctx, cfg)
 }

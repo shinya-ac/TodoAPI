@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 
 	"gopkg.in/ini.v1"
@@ -9,7 +10,6 @@ import (
 )
 
 type ConfigList struct {
-	Host          string
 	DBUser        string
 	DBPassword    string
 	DBHost        string
@@ -21,21 +21,68 @@ type ConfigList struct {
 
 var Config ConfigList
 
-func init() {
-	cfg, err := ini.Load("config.ini")
+func getEnv(key, fallback string) string {
+	if value, exists := os.LookupEnv(key); exists {
+		return value
+	}
+	return fallback
+}
+
+func LoadConfig() (ConfigList, error) {
+	var cfg *ini.File
+	var err error
+
+	cfg, err = ini.Load("config.ini")
 	if err != nil {
-		logging.Logger.Error("configの読み込みに失敗", "error", err)
-		os.Exit(1)
+		logging.Logger.Warn("config.ini の読み込みに失敗。環境変数から設定を読み込む。", "error", err)
 	}
 
+	missingConfig := []string{}
+
 	Config = ConfigList{
-		Host:          cfg.Section("db").Key("host").String(),
-		DBUser:        cfg.Section("db").Key("user").String(),
-		DBPassword:    cfg.Section("db").Key("password").String(),
-		DBHost:        cfg.Section("db").Key("host").String(),
-		DBPort:        cfg.Section("db").Key("port").String(),
-		DBName:        cfg.Section("db").Key("name").String(),
-		ServerAddress: cfg.Section("server").Key("address").String(),
-		ServerPort:    cfg.Section("server").Key("port").String(),
+		DBUser:        getEnv("DB_USER", getINIValue(cfg, "db", "user", "")),
+		DBPassword:    getEnv("DB_PASSWORD", getINIValue(cfg, "db", "password", "")),
+		DBHost:        getEnv("DB_HOST", getINIValue(cfg, "db", "host", "")),
+		DBPort:        getEnv("DB_PORT", getINIValue(cfg, "db", "port", "")),
+		DBName:        getEnv("DB_NAME", getINIValue(cfg, "db", "name", "")),
+		ServerAddress: getEnv("SERVER_ADDRESS", getINIValue(cfg, "server", "address", "")),
+		ServerPort:    getEnv("SERVER_PORT", getINIValue(cfg, "server", "port", "")),
 	}
+
+	if Config.DBUser == "" {
+		missingConfig = append(missingConfig, "DB_USER")
+	}
+	if Config.DBPassword == "" {
+		missingConfig = append(missingConfig, "DB_PASSWORD")
+	}
+	if Config.DBHost == "" {
+		missingConfig = append(missingConfig, "DB_HOST")
+	}
+	if Config.DBPort == "" {
+		missingConfig = append(missingConfig, "DB_PORT")
+	}
+	if Config.DBName == "" {
+		missingConfig = append(missingConfig, "DB_NAME")
+	}
+	if Config.ServerAddress == "" {
+		missingConfig = append(missingConfig, "SERVER_ADDRESS")
+	}
+	if Config.ServerPort == "" {
+		missingConfig = append(missingConfig, "SERVER_PORT")
+	}
+
+	if len(missingConfig) > 0 {
+		errMsg := fmt.Sprintf("必要な設定が見つかりません: %v", missingConfig)
+		logging.Logger.Error(errMsg)
+		return Config, fmt.Errorf(errMsg)
+	}
+
+	return Config, nil
+}
+
+func getINIValue(cfg *ini.File, section string, key string, fallback string) string {
+	if cfg == nil {
+		return fallback
+	}
+	return cfg.Section(section).Key(key).String()
 }
