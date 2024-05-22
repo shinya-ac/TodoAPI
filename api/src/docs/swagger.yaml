@@ -11,11 +11,27 @@ definitions:
     - content
     - title
     type: object
+  task.Task:
+    properties:
+      content:
+        type: string
+      id:
+        type: string
+      title:
+        type: string
+    type: object
   task.createTaskResponse:
     properties:
       id:
         example: 4082ed31-263c-40ec-9d41-e9d274c6bca8
         type: string
+    type: object
+  task.getTaskResponse:
+    properties:
+      tasks:
+        items:
+          $ref: '#/definitions/task.Task'
+        type: array
     type: object
 info:
   contact: {}
@@ -25,6 +41,28 @@ info:
   version: "1.0"
 paths:
   /v1/task:
+    get:
+      parameters:
+      - default: 1
+        description: ページ数
+        in: query
+        name: page
+        type: integer
+      - default: 100
+        description: ページサイズ
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/task.getTaskResponse'
+      summary: Task一覧を取得する
+      tags:
+      - Task
     post:
       consumes:
       - application/json

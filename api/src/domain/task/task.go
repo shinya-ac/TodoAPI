@@ -45,6 +45,14 @@ func (t *Task) GetId() string {
 	return t.Id
 }
 
+func (t *Task) GetTitle() string {
+	return t.Title
+}
+
+func (t *Task) GetContent() string {
+	return t.Content
+}
+
 const (
 	titleLengthMin = 1
 	titleLengthMax = 50
