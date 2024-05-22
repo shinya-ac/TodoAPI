@@ -92,7 +92,12 @@ func (h handler) GetTasks(ctx *gin.Context) {
 
 	offset := (page - 1) * pageSize
 
-	dto, err := h.getTaskUseCase.Run(ctx, offset, pageSize)
+	input := task.GetTaskUseCaseInputDto{
+		Offset:   offset,
+		PageSize: pageSize,
+	}
+
+	dto, err := h.getTaskUseCase.Run(ctx, input)
 	if err != nil {
 		logging.Logger.Error("usecaseの実行に失敗", "error", err)
 		settings.ReturnError(ctx, err)

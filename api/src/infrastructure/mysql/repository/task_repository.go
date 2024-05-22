@@ -31,7 +31,7 @@ func (r *taskRepository) Create(ctx context.Context, task *task.Task) error {
 func (r *taskRepository) Get(ctx context.Context, offset int, pageSize int) ([]*task.Task, error) {
 	logging.Logger.Info("Get実行", "offset:", offset)
 
-	query := "SELECT id, title, content FROM tasks LIMIT ? OFFSET ?"
+	query := "SELECT id, title, content FROM tasks ORDER BY created_at DESC LIMIT ? OFFSET ?"
 
 	rows, err := r.db.QueryContext(ctx, query, pageSize, offset)
 	if err != nil {
