@@ -50,3 +50,29 @@ func (r *taskRepository) Get(ctx context.Context, offset int, pageSize int) ([]*
 	}
 	return tasks, nil
 }
+
+func (r *taskRepository) FindById(ctx context.Context, id string) (*task.Task, error) {
+	query := "SELECT id, title, content FROM tasks WHERE id = ?"
+	row := r.db.QueryRowContext(ctx, query, id)
+	var task task.Task
+	err := row.Scan(&task.Id, &task.Title, &task.Content)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, err
+		}
+		return nil, err
+	}
+	return &task, nil
+}
+
+func (r *taskRepository) Save(ctx context.Context, task *task.Task) error {
+	query := `
+		INSERT INTO tasks (id, title, content)
+		VALUES (?, ?, ?)
+		ON DUPLICATE KEY UPDATE
+			title = VALUES(title),
+			content = VALUES(content),
+			updated_at = VALUES(updated_at)`
+	_, err := r.db.ExecContext(ctx, query, task.Id, task.Title, task.Content)
+	return err
+}

@@ -29,9 +29,11 @@ func taskRoute(r *ginpkg.RouterGroup) {
 	taskRepository := repository.NewTaskRepository(db.GetDB())
 	cuc := taskApp.NewCreateTaskUseCase(taskRepository)
 	guc := taskApp.NewGetTaskUseCase(taskRepository)
-	h := taskPre.NewHandler(cuc, guc)
+	uuc := taskApp.NewUpdateTaskUseCase(taskRepository)
+	h := taskPre.NewHandler(cuc, guc, uuc)
 
 	group := r.Group("/task")
 	group.POST("/", h.CreateTask)
 	group.GET("/", h.GetTasks)
+	group.PUT("/", h.UpdateTasks)
 }

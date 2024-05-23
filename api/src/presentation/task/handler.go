@@ -14,15 +14,18 @@ import (
 type handler struct {
 	createTaskUseCase *task.CreateTaskUseCase
 	getTaskUseCase    *task.GetTaskUseCase
+	updateTaskUseCase *task.UpdateTaskUseCase
 }
 
 func NewHandler(
 	createTaskUseCase *task.CreateTaskUseCase,
 	getTaskUseCase *task.GetTaskUseCase,
+	updateTaskUseCase *task.UpdateTaskUseCase,
 ) handler {
 	return handler{
 		createTaskUseCase: createTaskUseCase,
 		getTaskUseCase:    getTaskUseCase,
+		updateTaskUseCase: updateTaskUseCase,
 	}
 }
 
@@ -106,6 +109,49 @@ func (h handler) GetTasks(ctx *gin.Context) {
 
 	response := getTaskResponse{
 		Tasks: dto.Tasks,
+	}
+	settings.ReturnStatusOK(ctx, response)
+}
+
+// GetTask godoc
+// @Summary Taskを更新する
+// @Tags Task
+// @Produce json
+// @Param request body UpdateTaskParams true "Task更新"
+// @Success 200 {object} updateTaskResponse
+// @Router /v1/task [put]
+func (h handler) UpdateTasks(ctx *gin.Context) {
+	logging.Logger.Info("UpdateTasks実行開始")
+	var params UpdateTaskParams
+	err := ctx.ShouldBindJSON(&params)
+	if err != nil {
+		logging.Logger.Error("paramsの形式が不正", "error", err)
+		settings.ReturnBadRequest(ctx, err)
+		return
+	}
+	validate := validator.GetValidator()
+	err = validate.Struct(params)
+	if err != nil {
+		logging.Logger.Error("paramsの内容が不正", "error", err)
+		settings.ReturnStatusBadRequest(ctx, err)
+		return
+	}
+
+	input := task.UpdateTaskUseCaseInputDto{
+		Id:      params.Id,
+		Title:   params.Title,
+		Content: params.Content,
+	}
+
+	dto, err := h.updateTaskUseCase.Run(ctx, input)
+	if err != nil {
+		logging.Logger.Error("usecaseの実行に失敗", "error", err)
+		settings.ReturnError(ctx, err)
+		return
+	}
+
+	response := updateTaskResponse{
+		TaskId: dto.Id,
 	}
 	settings.ReturnStatusOK(ctx, response)
 }
