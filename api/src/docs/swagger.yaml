@@ -20,6 +20,21 @@ definitions:
       title:
         type: string
     type: object
+  task.UpdateTaskParams:
+    properties:
+      content:
+        example: 「達人に学ぶクリーンアーキテクチャp200~300」までを読む
+        type: string
+      id:
+        example: 4082ed31-263c-40ec-9d41-e9d274c6bca8
+        type: string
+      title:
+        example: 輪読会
+        type: string
+    required:
+    - content
+    - title
+    type: object
   task.createTaskResponse:
     properties:
       id:
@@ -32,6 +47,12 @@ definitions:
         items:
           $ref: '#/definitions/task.Task'
         type: array
+    type: object
+  task.updateTaskResponse:
+    properties:
+      id:
+        example: 4082ed31-263c-40ec-9d41-e9d274c6bca8
+        type: string
     type: object
 info:
   contact: {}
@@ -81,6 +102,24 @@ paths:
           schema:
             $ref: '#/definitions/task.createTaskResponse'
       summary: Taskを登録する
+      tags:
+      - Task
+    put:
+      parameters:
+      - description: Task更新
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/task.UpdateTaskParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/task.updateTaskResponse'
+      summary: Taskを更新する
       tags:
       - Task
 swagger: "2.0"

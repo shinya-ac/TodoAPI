@@ -50,6 +50,34 @@ const docTemplate = `{
                     }
                 }
             },
+            "put": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Task"
+                ],
+                "summary": "Taskを更新する",
+                "parameters": [
+                    {
+                        "description": "Task更新",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/task.UpdateTaskParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/task.updateTaskResponse"
+                        }
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -115,6 +143,27 @@ const docTemplate = `{
                 }
             }
         },
+        "task.UpdateTaskParams": {
+            "type": "object",
+            "required": [
+                "content",
+                "title"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "example": "「達人に学ぶクリーンアーキテクチャp200~300」までを読む"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "4082ed31-263c-40ec-9d41-e9d274c6bca8"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "輪読会"
+                }
+            }
+        },
         "task.createTaskResponse": {
             "type": "object",
             "properties": {
@@ -132,6 +181,15 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/task.Task"
                     }
+                }
+            }
+        },
+        "task.updateTaskResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "4082ed31-263c-40ec-9d41-e9d274c6bca8"
                 }
             }
         }

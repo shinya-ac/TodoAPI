@@ -113,6 +113,13 @@ func (h handler) GetTasks(ctx *gin.Context) {
 	settings.ReturnStatusOK(ctx, response)
 }
 
+// GetTask godoc
+// @Summary Taskを更新する
+// @Tags Task
+// @Produce json
+// @Param request body UpdateTaskParams true "Task更新"
+// @Success 200 {object} updateTaskResponse
+// @Router /v1/task [put]
 func (h handler) UpdateTasks(ctx *gin.Context) {
 	logging.Logger.Info("UpdateTasks実行開始")
 	var params UpdateTaskParams
