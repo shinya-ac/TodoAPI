@@ -6,7 +6,7 @@ type CreateTaskParams struct {
 }
 
 type UpdateTaskParams struct {
-	Id      string `json:"id" example:"4082ed31-263c-40ec-9d41-e9d274c6bca8"`
-	Title   string `json:"title" validate:"required" example:"輪読会"`
-	Content string `json:"content" validate:"required" example:"「達人に学ぶクリーンアーキテクチャp200~300」までを読む"`
+	Title   *string `json:"title" validate:"omitempty,min=1,max=100" example:"輪読会"`
+	Content *string `json:"content" validate:"omitempty,min=1,max=1000" example:"「達人に学ぶクリーンアーキテクチャp200~300」までを読む"`
+	Status  *string `json:"status" validate:"omitempty,status" example:"Completed"`
 }

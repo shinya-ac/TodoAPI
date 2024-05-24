@@ -35,5 +35,5 @@ func taskRoute(r *ginpkg.RouterGroup) {
 	group := r.Group("/task")
 	group.POST("/", h.CreateTask)
 	group.GET("/", h.GetTasks)
-	group.PUT("/", h.UpdateTasks)
+	group.PUT("/:id", h.UpdateTasks)
 }

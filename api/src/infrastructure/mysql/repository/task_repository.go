@@ -18,9 +18,9 @@ func NewTaskRepository(db *sql.DB) task.TaskRepository {
 
 func (r *taskRepository) Create(ctx context.Context, task *task.Task) error {
 	logging.Logger.Info("Create実行", "task:", task)
-	query := `INSERT INTO tasks (id, title, content) VALUES(?, ?, ?)`
+	query := `INSERT INTO tasks (id, title, content, status) VALUES(?, ?, ?, ?)`
 
-	_, err := r.db.ExecContext(ctx, query, task.Id, task.Title, task.Content)
+	_, err := r.db.ExecContext(ctx, query, task.Id, task.Title, task.Content, task.Status)
 	if err != nil {
 		logging.Logger.Error("SQL実行に失敗", "error", err)
 		return err
@@ -28,20 +28,31 @@ func (r *taskRepository) Create(ctx context.Context, task *task.Task) error {
 	return nil
 }
 
-func (r *taskRepository) Get(ctx context.Context, offset int, pageSize int) ([]*task.Task, error) {
+func (r *taskRepository) Get(ctx context.Context, offset int, pageSize int, status *string) ([]*task.Task, error) {
 	logging.Logger.Info("Get実行", "offset:", offset)
 
-	query := "SELECT id, title, content FROM tasks ORDER BY created_at DESC LIMIT ? OFFSET ?"
+	query := "SELECT id, title, content, status FROM tasks"
+	var args []interface{}
 
-	rows, err := r.db.QueryContext(ctx, query, pageSize, offset)
+	if status != nil {
+		logging.Logger.Info("status:", "", *status)
+		query += " WHERE status = ?"
+		args = append(args, *status)
+	}
+
+	query += " ORDER BY created_at DESC LIMIT ? OFFSET ?"
+	args = append(args, pageSize, offset)
+
+	rows, err := r.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		logging.Logger.Error("SQL実行に失敗", "error", err)
 		return nil, err
 	}
+	defer rows.Close()
 	var tasks []*task.Task
 	for rows.Next() {
 		var t task.Task
-		err := rows.Scan(&t.Id, &t.Title, &t.Content)
+		err := rows.Scan(&t.Id, &t.Title, &t.Content, &t.Status)
 		if err != nil {
 			logging.Logger.Error("行のスキャンに失敗", "error", err)
 			return nil, err
@@ -52,10 +63,10 @@ func (r *taskRepository) Get(ctx context.Context, offset int, pageSize int) ([]*
 }
 
 func (r *taskRepository) FindById(ctx context.Context, id string) (*task.Task, error) {
-	query := "SELECT id, title, content FROM tasks WHERE id = ?"
+	query := "SELECT id, title, content, status FROM tasks WHERE id = ?"
 	row := r.db.QueryRowContext(ctx, query, id)
 	var task task.Task
-	err := row.Scan(&task.Id, &task.Title, &task.Content)
+	err := row.Scan(&task.Id, &task.Title, &task.Content, &task.Status)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, err
@@ -67,12 +78,13 @@ func (r *taskRepository) FindById(ctx context.Context, id string) (*task.Task, e
 
 func (r *taskRepository) Save(ctx context.Context, task *task.Task) error {
 	query := `
-		INSERT INTO tasks (id, title, content)
-		VALUES (?, ?, ?)
+		INSERT INTO tasks (id, title, content, status)
+		VALUES (?, ?, ?, ?)
 		ON DUPLICATE KEY UPDATE
 			title = VALUES(title),
 			content = VALUES(content),
-			updated_at = VALUES(updated_at)`
-	_, err := r.db.ExecContext(ctx, query, task.Id, task.Title, task.Content)
+			status = VALUES(status),
+			updated_at = NOW()`
+	_, err := r.db.ExecContext(ctx, query, task.Id, task.Title, task.Content, task.Status)
 	return err
 }

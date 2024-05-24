@@ -23,6 +23,7 @@ func NewGetTaskUseCase(
 type GetTaskUseCaseInputDto struct {
 	Offset   int
 	PageSize int
+	Status   *string
 }
 
 type GetTaskUseCaseOutputDto struct {
@@ -33,7 +34,7 @@ func (uc *GetTaskUseCase) Run(
 	ctx context.Context,
 	dto GetTaskUseCaseInputDto,
 ) (*GetTaskUseCaseOutputDto, error) {
-	tasks, err := uc.taskRepository.Get(ctx, dto.Offset, dto.PageSize)
+	tasks, err := uc.taskRepository.Get(ctx, dto.Offset, dto.PageSize, dto.Status)
 	if err != nil {
 		logging.Logger.Error("サーバーエラー", "error", err)
 		return nil, err

@@ -22,8 +22,9 @@ func NewUpdateTaskUseCase(
 
 type UpdateTaskUseCaseInputDto struct {
 	Id      string
-	Title   string
-	Content string
+	Title   *string
+	Content *string
+	Status  *string
 }
 
 type UpdateTaskUseCaseOutputDto struct {
@@ -42,7 +43,7 @@ func (uc *UpdateTaskUseCase) Run(
 		return nil, errDomain.NewError("IDに対応するTodoが見つかりません。")
 	}
 
-	if err := t.UpdateTask(dto.Title, dto.Content); err != nil {
+	if err := t.UpdateTask(dto.Title, dto.Content, dto.Status); err != nil {
 		return nil, err
 	}
 

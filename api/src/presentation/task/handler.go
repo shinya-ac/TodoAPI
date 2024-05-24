@@ -78,6 +78,7 @@ func (h handler) CreateTask(ctx *gin.Context) {
 // @Produce json
 // @Param page query int false "ページ数" default(1)
 // @Param pageSize query int false "ページサイズ" default(100)
+// @Param status query string false "Todoのステータス" default(Pending)
 // @Success 200 {object} getTaskResponse
 // @Router /v1/task [get]
 func (h handler) GetTasks(ctx *gin.Context) {
@@ -85,6 +86,7 @@ func (h handler) GetTasks(ctx *gin.Context) {
 
 	page := 1
 	pageSize := 100
+	var status *string
 
 	if p := ctx.Query("page"); p != "" {
 		page, _ = strconv.Atoi(p)
@@ -92,12 +94,23 @@ func (h handler) GetTasks(ctx *gin.Context) {
 	if ps := ctx.Query("pageSize"); ps != "" {
 		pageSize, _ = strconv.Atoi(ps)
 	}
+	if st := ctx.Query("status"); st != "" {
+		status = &st
+		v := validator.GetValidator()
+		err := v.Var(*status, "status")
+		if err != nil {
+			logging.Logger.Error("statusが有効ではない", "error", err)
+			settings.ReturnBadRequest(ctx, err)
+			return
+		}
+	}
 
 	offset := (page - 1) * pageSize
 
 	input := task.GetTaskUseCaseInputDto{
 		Offset:   offset,
 		PageSize: pageSize,
+		Status:   status,
 	}
 
 	dto, err := h.getTaskUseCase.Run(ctx, input)
@@ -117,9 +130,10 @@ func (h handler) GetTasks(ctx *gin.Context) {
 // @Summary Taskを更新する
 // @Tags Task
 // @Produce json
+// @Param id path string true "更新するTodoを指定するid"
 // @Param request body UpdateTaskParams true "Task更新"
 // @Success 200 {object} updateTaskResponse
-// @Router /v1/task [put]
+// @Router /v1/task/{id} [put]
 func (h handler) UpdateTasks(ctx *gin.Context) {
 	logging.Logger.Info("UpdateTasks実行開始")
 	var params UpdateTaskParams
@@ -137,10 +151,13 @@ func (h handler) UpdateTasks(ctx *gin.Context) {
 		return
 	}
 
+	id := ctx.Param("id")
+
 	input := task.UpdateTaskUseCaseInputDto{
-		Id:      params.Id,
+		Id:      id,
 		Title:   params.Title,
 		Content: params.Content,
+		Status:  params.Status,
 	}
 
 	dto, err := h.updateTaskUseCase.Run(ctx, input)
