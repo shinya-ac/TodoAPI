@@ -7,12 +7,14 @@ import (
 
 	errDomain "github.com/shinya-ac/TodoAPI/domain/error"
 	"github.com/shinya-ac/TodoAPI/pkg/logging"
+	"github.com/shinya-ac/TodoAPI/pkg/validator"
 )
 
 type Task struct {
 	Id      string
 	Title   string
 	Content string
+	Status  string
 }
 
 func NewTask(
@@ -34,19 +36,31 @@ func NewTask(
 		logging.Logger.Error("UUIDの生成に失敗", "error", err)
 		return nil, err
 	}
+	status := "Pending"
+
 	return &Task{
 		Id:      id.String(),
 		Title:   Title,
 		Content: Content,
+		Status:  status,
 	}, nil
 }
 
-func (t *Task) UpdateTask(newTitle, newContent string) error {
-	if err := t.UpdateTitle(newTitle); err != nil {
-		return err
+func (t *Task) UpdateTask(newTitle, newContent, newStatus *string) error {
+	if newTitle != nil {
+		if err := t.UpdateTitle(*newTitle); err != nil {
+			return err
+		}
 	}
-	if err := t.UpdateContent(newContent); err != nil {
-		return err
+	if newContent != nil {
+		if err := t.UpdateContent(*newContent); err != nil {
+			return err
+		}
+	}
+	if newStatus != nil {
+		if err := t.UpdateStatus(*newStatus); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -69,6 +83,25 @@ func (t *Task) UpdateContent(newContent string) error {
 	}
 	t.Content = newContent
 	return nil
+}
+
+func (t *Task) UpdateStatus(newStatus string) error {
+	if !isValidStatus(newStatus) {
+		err := errDomain.NewError("タスクの状態の値が不正です。")
+		logging.Logger.Error("タスクの状態の値が不正", "error", err)
+		return err
+	}
+	t.Status = newStatus
+	return nil
+}
+
+func isValidStatus(status string) bool {
+	for _, validStatus := range validator.ValidStatuses {
+		if status == validStatus {
+			return true
+		}
+	}
+	return false
 }
 
 func (t *Task) GetId() string {
