@@ -16,12 +16,14 @@ import (
 
 func InitRoute(api *ginpkg.Engine) {
 	api.Use(settings.ErrorHandler())
-	v1 := api.Group("/v1")
-	v1.GET("/health", health_handler.HealthCheck)
-	v1.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	api.GET("/v1/health", health_handler.HealthCheck)
+	api.GET("/v1/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	protectedV1 := api.Group("/v1")
+	protectedV1.Use(settings.ApiKeyAuthMiddleware())
 	{
-		taskRoute(v1)
+		taskRoute(protectedV1)
 	}
 }
 
