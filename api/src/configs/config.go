@@ -17,6 +17,9 @@ type ConfigList struct {
 	DBName        string
 	ServerAddress string
 	ServerPort    string
+	APIKey1       string
+	APIKey2       string
+	APIKey3       string
 }
 
 var Config ConfigList
@@ -47,6 +50,9 @@ func LoadConfig() (ConfigList, error) {
 		DBName:        getEnv("DB_NAME", getINIValue(cfg, "db", "name", "")),
 		ServerAddress: getEnv("SERVER_ADDRESS", getINIValue(cfg, "server", "address", "")),
 		ServerPort:    getEnv("SERVER_PORT", getINIValue(cfg, "server", "port", "")),
+		APIKey1:       getEnv("API_KEY1", getINIValue(cfg, "api", "key1", "")),
+		APIKey2:       getEnv("API_KEY2", getINIValue(cfg, "api", "key2", "")),
+		APIKey3:       getEnv("API_KEY3", getINIValue(cfg, "api", "key3", "")),
 	}
 
 	if Config.DBUser == "" {
@@ -69,6 +75,15 @@ func LoadConfig() (ConfigList, error) {
 	}
 	if Config.ServerPort == "" {
 		missingConfig = append(missingConfig, "SERVER_PORT")
+	}
+	if Config.APIKey1 == "" {
+		missingConfig = append(missingConfig, "API_KEY1")
+	}
+	if Config.APIKey2 == "" {
+		missingConfig = append(missingConfig, "API_KEY2")
+	}
+	if Config.APIKey3 == "" {
+		missingConfig = append(missingConfig, "API_KEY3")
 	}
 
 	if len(missingConfig) > 0 {

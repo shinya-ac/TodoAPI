@@ -37,6 +37,7 @@ func NewHandler(
 // @Param request body CreateTaskParams true "Task登録"
 // @Success 201 {object} createTaskResponse
 // @Router /v1/task [post]
+// @Security ApiKeyAuth
 func (h handler) CreateTask(ctx *gin.Context) {
 	logging.Logger.Info("CreateTask実行開始")
 	var params CreateTaskParams
@@ -81,6 +82,7 @@ func (h handler) CreateTask(ctx *gin.Context) {
 // @Param status query string false "Todoのステータス" default(Pending)
 // @Success 200 {object} getTaskResponse
 // @Router /v1/task [get]
+// @Security ApiKeyAuth
 func (h handler) GetTasks(ctx *gin.Context) {
 	logging.Logger.Info("GetTasks実行開始")
 
@@ -134,6 +136,7 @@ func (h handler) GetTasks(ctx *gin.Context) {
 // @Param request body UpdateTaskParams true "Task更新"
 // @Success 200 {object} updateTaskResponse
 // @Router /v1/task/{id} [put]
+// @Security ApiKeyAuth
 func (h handler) UpdateTasks(ctx *gin.Context) {
 	logging.Logger.Info("UpdateTasks実行開始")
 	var params UpdateTaskParams

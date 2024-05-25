@@ -18,6 +18,11 @@ const docTemplate = `{
     "paths": {
         "/v1/task": {
             "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -39,6 +44,13 @@ const docTemplate = `{
                         "description": "ページサイズ",
                         "name": "pageSize",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "default": "Pending",
+                        "description": "Todoのステータス",
+                        "name": "status",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -50,35 +62,12 @@ const docTemplate = `{
                     }
                 }
             },
-            "put": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Task"
-                ],
-                "summary": "Taskを更新する",
-                "parameters": [
-                    {
-                        "description": "Task更新",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/task.UpdateTaskParams"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/task.updateTaskResponse"
-                        }
-                    }
-                }
-            },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -105,6 +94,48 @@ const docTemplate = `{
                         "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/task.createTaskResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/task/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Task"
+                ],
+                "summary": "Taskを更新する",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "更新するTodoを指定するid",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Task更新",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/task.UpdateTaskParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/task.updateTaskResponse"
                         }
                     }
                 }
@@ -138,6 +169,9 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "status": {
+                    "type": "string"
+                },
                 "title": {
                     "type": "string"
                 }
@@ -145,21 +179,21 @@ const docTemplate = `{
         },
         "task.UpdateTaskParams": {
             "type": "object",
-            "required": [
-                "content",
-                "title"
-            ],
             "properties": {
                 "content": {
                     "type": "string",
+                    "maxLength": 1000,
+                    "minLength": 1,
                     "example": "「達人に学ぶクリーンアーキテクチャp200~300」までを読む"
                 },
-                "id": {
+                "status": {
                     "type": "string",
-                    "example": "4082ed31-263c-40ec-9d41-e9d274c6bca8"
+                    "example": "Completed"
                 },
                 "title": {
                     "type": "string",
+                    "maxLength": 100,
+                    "minLength": 1,
                     "example": "輪読会"
                 }
             }
@@ -192,6 +226,13 @@ const docTemplate = `{
                     "example": "4082ed31-263c-40ec-9d41-e9d274c6bca8"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Todo-API-Key",
+            "in": "header"
         }
     }
 }`

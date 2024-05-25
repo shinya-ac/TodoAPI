@@ -15,6 +15,9 @@ import (
 // @version         1.0
 // @description     RESTful API for TodoApp
 // @termsOfService  localhost:8080
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Todo-API-Key
 
 func main() {
 	logging.InitLogger()
