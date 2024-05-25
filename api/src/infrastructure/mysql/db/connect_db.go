@@ -20,7 +20,7 @@ var (
 	dbcon *sql.DB
 )
 
-func setDB(d *sql.DB) {
+func SetDB(d *sql.DB) {
 	dbcon = d
 }
 
@@ -43,7 +43,7 @@ func NewMainDB(cnf config.ConfigList) {
 			logging.Logger.Error("DBの初期化に失敗", "error", err)
 			panic(err)
 		}
-		setDB(dbcon)
+		SetDB(dbcon)
 	})
 }
 
