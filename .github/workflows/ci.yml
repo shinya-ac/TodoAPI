@@ -30,6 +30,6 @@ jobs:
 
       - name: Run tests
         run: |
-        cd api/src
-        go test -v ./...
+          cd api/src
+          go test -v ./...
 
