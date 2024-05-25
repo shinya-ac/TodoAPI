@@ -78,7 +78,7 @@ func ConnectDB(resource *dockertest.Resource, pool *dockertest.Pool) *sql.DB {
 func SetupTestDB(db *sql.DB, schemaFilePath string) {
 	schema, err := os.ReadFile(schemaFilePath)
 	if err != nil {
-		log.Fatalf("スキーマファイルを読み取れませn。: %s", err)
+		log.Fatalf("スキーマファイルを読み取れません。: %s", err)
 	}
 
 	if _, err := db.Exec(string(schema)); err != nil {
