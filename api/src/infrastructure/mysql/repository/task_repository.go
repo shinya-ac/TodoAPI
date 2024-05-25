@@ -4,20 +4,26 @@ import (
 	"context"
 	"database/sql"
 
+	errDomain "github.com/shinya-ac/TodoAPI/domain/error"
 	"github.com/shinya-ac/TodoAPI/domain/task"
 	"github.com/shinya-ac/TodoAPI/pkg/logging"
 )
 
-type taskRepository struct {
+type TaskRepository struct {
 	db *sql.DB
 }
 
 func NewTaskRepository(db *sql.DB) task.TaskRepository {
-	return &taskRepository{db: db}
+	return &TaskRepository{db: db}
 }
 
-func (r *taskRepository) Create(ctx context.Context, task *task.Task) error {
-	logging.Logger.Info("Create実行", "task:", task)
+func (r *TaskRepository) Create(ctx context.Context, task *task.Task) error {
+	if task == nil {
+		logging.Logger.Error("Taskがnil")
+		err := errDomain.NewError("Taskがnilです。")
+		return err
+	}
+	logging.Logger.Info("Create実行", "task:", *task)
 	query := `INSERT INTO tasks (id, title, content, status) VALUES(?, ?, ?, ?)`
 
 	_, err := r.db.ExecContext(ctx, query, task.Id, task.Title, task.Content, task.Status)
@@ -28,7 +34,7 @@ func (r *taskRepository) Create(ctx context.Context, task *task.Task) error {
 	return nil
 }
 
-func (r *taskRepository) Get(ctx context.Context, offset int, pageSize int, status *string) ([]*task.Task, error) {
+func (r *TaskRepository) Get(ctx context.Context, offset int, pageSize int, status *string) ([]*task.Task, error) {
 	logging.Logger.Info("Get実行", "offset:", offset)
 
 	query := "SELECT id, title, content, status FROM tasks"
@@ -62,7 +68,7 @@ func (r *taskRepository) Get(ctx context.Context, offset int, pageSize int, stat
 	return tasks, nil
 }
 
-func (r *taskRepository) FindById(ctx context.Context, id string) (*task.Task, error) {
+func (r *TaskRepository) FindById(ctx context.Context, id string) (*task.Task, error) {
 	query := "SELECT id, title, content, status FROM tasks WHERE id = ?"
 	row := r.db.QueryRowContext(ctx, query, id)
 	var task task.Task
@@ -76,7 +82,7 @@ func (r *taskRepository) FindById(ctx context.Context, id string) (*task.Task, e
 	return &task, nil
 }
 
-func (r *taskRepository) Save(ctx context.Context, task *task.Task) error {
+func (r *TaskRepository) Save(ctx context.Context, task *task.Task) error {
 	query := `
 		INSERT INTO tasks (id, title, content, status)
 		VALUES (?, ?, ?, ?)
