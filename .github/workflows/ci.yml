@@ -3,7 +3,14 @@ name: Go CI
 on:
   push:
     branches:
-      - trial/ci
+      - develop
+      - master
+      - 'feature/*'
+  pull_request:
+    branches:
+      - develop
+      - master
+      - 'feature/*'
 
 jobs:
   test:
