@@ -14,13 +14,13 @@ func TestTask_GetTask(t *testing.T) {
 	tests := map[string]struct {
 		url          string
 		expectedCode int
-		expectedBody map[string][]map[string]interface{}
+		expectedBody map[string]interface{}
 	}{
 		"正常系": {
 			url:          "/v1/tasks/",
 			expectedCode: http.StatusOK,
-			expectedBody: map[string][]map[string]interface{}{
-				"tasks": {
+			expectedBody: map[string]interface{}{
+				"tasks": []map[string]interface{}{
 					{
 						"Id":      "46039334-6ffc-4fe3-ab59-f40a7b73b611",
 						"Title":   "Todoのテストを行う1",
@@ -58,13 +58,14 @@ func TestTask_GetTask(t *testing.T) {
 						"Status":  "InProgress",
 					},
 				},
+				"totalTasks": "6",
 			},
 		},
 		"正常系_QueryParameter付き": {
 			url:          "/v1/tasks/?status=Completed",
 			expectedCode: http.StatusOK,
-			expectedBody: map[string][]map[string]interface{}{
-				"tasks": {
+			expectedBody: map[string]interface{}{
+				"tasks": []map[string]interface{}{
 					{
 						"Id":      "c678ce19-cee1-4dd3-a128-b2312c89f2fa",
 						"Title":   "Todoのテストを行う3",
@@ -72,6 +73,7 @@ func TestTask_GetTask(t *testing.T) {
 						"Status":  "Completed",
 					},
 				},
+				"totalTasks": "1",
 			},
 		},
 	}
@@ -88,9 +90,19 @@ func TestTask_GetTask(t *testing.T) {
 				t.Errorf("expected status code %d, got %d", tt.expectedCode, w.Code)
 			}
 
-			var responseBody map[string][]map[string]interface{}
+			var responseBody map[string]interface{}
 			if err := json.Unmarshal(w.Body.Bytes(), &responseBody); err != nil {
 				t.Fatalf("failed to unmarshal response body: %v", err)
+			}
+
+			if tasks, ok := responseBody["tasks"].([]interface{}); ok {
+				var convertedTasks []map[string]interface{}
+				for _, task := range tasks {
+					if taskMap, ok := task.(map[string]interface{}); ok {
+						convertedTasks = append(convertedTasks, taskMap)
+					}
+				}
+				responseBody["tasks"] = convertedTasks
 			}
 
 			if diff := cmp.Diff(tt.expectedBody, responseBody); diff != "" {

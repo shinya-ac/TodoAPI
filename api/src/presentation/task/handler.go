@@ -136,8 +136,12 @@ func (h handler) GetTasks(ctx *gin.Context) {
 		return
 	}
 
+	taskCount := len(dto.Tasks)
+	taskCountStr := strconv.Itoa(taskCount)
+
 	response := getTaskResponse{
-		Tasks: dto.Tasks,
+		Tasks:      dto.Tasks,
+		TotalTasks: taskCountStr,
 	}
 	settings.ReturnStatusOK(ctx, response)
 }
