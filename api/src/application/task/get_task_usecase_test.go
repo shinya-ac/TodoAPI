@@ -26,12 +26,13 @@ func TestGetTaskUseCase_Run(t *testing.T) {
 		{
 			name: "Todoを全件取得し、DTOを返却すること",
 			input: GetTaskUseCaseInputDto{
-				Offset:   100,
-				PageSize: 1,
-				Status:   strPtr("Pending"),
+				Offset:     100,
+				PageSize:   1,
+				Status:     strPtr("Pending"),
+				SearchWord: strPtr(""),
 			},
 			mockFunc: func() {
-				mockTaskRepo.EXPECT().Get(gomock.Any(), 100, 1, strPtr("Pending")).Return([]*taskDomain.Task{
+				mockTaskRepo.EXPECT().Get(gomock.Any(), 100, 1, strPtr("Pending"), strPtr("")).Return([]*taskDomain.Task{
 					{
 						Id:      "46039334-6ffc-4fe3-ab59-f40a7b73b611",
 						Title:   "Todoのテストを行う1",

@@ -60,16 +60,20 @@ func TestGet(t *testing.T) {
 	defer db.Close()
 
 	status := "Pending"
+	searchWord := "Todo"
 	rows := sqlmock.NewRows([]string{"id", "title", "content", "status"}).
 		AddRow("46039334-6ffc-4fe3-ab59-f40a7b73b611", "Todoのテストを行う", "Todo機能のテストをGo言語で行う", "Pending").
 		AddRow("46039334-6ffc-4fe3-ab59-f40a7b73b612", "Todoのテストを行う2", "Todo機能のテストをGo言語で行う2", "Completed")
 
-	query := "SELECT id, title, content, status FROM tasks WHERE status = \\? ORDER BY created_at DESC LIMIT \\? OFFSET \\?"
+	query := `SELECT id, title, content, status FROM tasks WHERE status = \? AND \(LOWER\(title\) LIKE \? OR LOWER\(content\) LIKE \?\) ORDER BY created_at DESC LIMIT \? OFFSET \?`
+
+	wildcardSearchWord := "%" + searchWord + "%"
+
 	mock.ExpectQuery(query).
-		WithArgs(status, 2, 0).
+		WithArgs(status, wildcardSearchWord, wildcardSearchWord, 2, 0).
 		WillReturnRows(rows)
 
-	tasks, err := repo.Get(ctx, 0, 2, &status)
+	tasks, err := repo.Get(ctx, 0, 2, &status, &searchWord)
 	assert.NoError(t, err)
 	assert.Len(t, tasks, 2)
 	assert.Equal(t, "46039334-6ffc-4fe3-ab59-f40a7b73b611", tasks[0].Id)
@@ -128,13 +132,17 @@ func TestGetWithDBError(t *testing.T) {
 	repo, mock, db, ctx := setup(t)
 	defer db.Close()
 	status := "Pending"
+	searchWord := "Todo"
 
-	query := "SELECT id, title, content, status FROM tasks WHERE status = \\? ORDER BY created_at DESC LIMIT \\? OFFSET \\?"
+	query := `SELECT id, title, content, status FROM tasks WHERE status = \? AND \(LOWER\(title\) LIKE \? OR LOWER\(content\) LIKE \?\) ORDER BY created_at DESC LIMIT \? OFFSET \?`
+
+	wildcardSearchWord := "%" + searchWord + "%"
+
 	mock.ExpectQuery(query).
-		WithArgs(status, 2, 0).
+		WithArgs(status, wildcardSearchWord, wildcardSearchWord, 2, 0).
 		WillReturnError(errors.New("DB error"))
 
-	tasks, err := repo.Get(ctx, 0, 2, &status)
+	tasks, err := repo.Get(ctx, 0, 2, &status, &searchWord)
 	assert.Error(t, err)
 	assert.Nil(t, tasks)
 	assert.Equal(t, "DB error", err.Error())

@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"strings"
 
 	errDomain "github.com/shinya-ac/TodoAPI/domain/error"
 	"github.com/shinya-ac/TodoAPI/domain/task"
@@ -34,16 +35,25 @@ func (r *TaskRepository) Create(ctx context.Context, task *task.Task) error {
 	return nil
 }
 
-func (r *TaskRepository) Get(ctx context.Context, offset int, pageSize int, status *string) ([]*task.Task, error) {
+func (r *TaskRepository) Get(ctx context.Context, offset int, pageSize int, status, searchWord *string) ([]*task.Task, error) {
 	logging.Logger.Info("Get実行", "offset:", offset)
 
 	query := "SELECT id, title, content, status FROM tasks"
 	var args []interface{}
+	var conditions []string
 
 	if status != nil {
-		logging.Logger.Info("status:", "", *status)
-		query += " WHERE status = ?"
+		conditions = append(conditions, "status = ?")
 		args = append(args, *status)
+	}
+
+	if searchWord != nil && *searchWord != "" {
+		conditions = append(conditions, "(LOWER(title) LIKE ? OR LOWER(content) LIKE ?)")
+		args = append(args, "%"+*searchWord+"%", "%"+*searchWord+"%")
+	}
+
+	if len(conditions) > 0 {
+		query += " WHERE " + strings.Join(conditions, " AND ")
 	}
 
 	query += " ORDER BY created_at DESC LIMIT ? OFFSET ?"

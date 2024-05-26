@@ -69,18 +69,18 @@ func (mr *MockTaskRepositoryMockRecorder) FindById(ctx, id any) *gomock.Call {
 }
 
 // Get mocks base method.
-func (m *MockTaskRepository) Get(ctx context.Context, offset, pageSize int, status *string) ([]*Task, error) {
+func (m *MockTaskRepository) Get(ctx context.Context, offset, pageSize int, status, searchWord *string) ([]*Task, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", ctx, offset, pageSize, status)
+	ret := m.ctrl.Call(m, "Get", ctx, offset, pageSize, status, searchWord)
 	ret0, _ := ret[0].([]*Task)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockTaskRepositoryMockRecorder) Get(ctx, offset, pageSize, status any) *gomock.Call {
+func (mr *MockTaskRepositoryMockRecorder) Get(ctx, offset, pageSize, status, searchWord any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockTaskRepository)(nil).Get), ctx, offset, pageSize, status)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockTaskRepository)(nil).Get), ctx, offset, pageSize, status, searchWord)
 }
 
 // Save mocks base method.
