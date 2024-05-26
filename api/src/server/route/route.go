@@ -35,8 +35,8 @@ func taskRoute(r *ginpkg.RouterGroup) {
 	duc := taskApp.NewDeleteTaskUseCase(taskRepository)
 	h := taskPre.NewHandler(cuc, guc, uuc, duc)
 
-	group := r.Group("/task")
-	group.POST("/", h.CreateTask)
+	group := r.Group("/tasks")
+	group.POST("/", h.CreateTasks)
 	group.GET("/", h.GetTasks)
 	group.PUT("/:id", h.UpdateTasks)
 	group.DELETE("/:id", h.DeleteTasks)

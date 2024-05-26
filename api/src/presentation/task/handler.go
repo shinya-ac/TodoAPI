@@ -34,7 +34,7 @@ func NewHandler(
 	}
 }
 
-// CreateTask godoc
+// CreateTasks godoc
 // @Summary Taskを登録する
 // @Tags Task
 // @Accept json
@@ -43,7 +43,7 @@ func NewHandler(
 // @Success 201 {object} createTaskResponse
 // @Router /v1/task [post]
 // @Security ApiKeyAuth
-func (h handler) CreateTask(ctx *gin.Context) {
+func (h handler) CreateTasks(ctx *gin.Context) {
 	logging.Logger.Info("CreateTask実行開始")
 	var params CreateTaskParams
 	err := ctx.ShouldBindJSON(&params)
