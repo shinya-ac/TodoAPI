@@ -7,7 +7,8 @@ type createTaskResponse struct {
 }
 
 type getTaskResponse struct {
-	Tasks []*task.Task `json:"tasks"`
+	Tasks      []*task.Task `json:"tasks"`
+	TotalTasks string       `json:"totalTasks"`
 }
 
 type updateTaskResponse struct {
