@@ -22,11 +22,28 @@ curl --location 'http://127.0.0.1:8080/v1/health'
     `http://localhost:8080/v1/swagger/index.html`
 
 ### Test
-以下を実行してエラーがないことを確認する。
+以下を実行してエラーがないことを確認する
 
 `make test`
 
-### 関連パッケージ
+### トラブルシューティング
+```
+ERROR: Network todo_api_network declared as external, but could not be found. Please create the network manually using `docker network create todo_api_network` and try again.
+```
+上記はDockerNetworkのエラー
+以下でNetworkを手動で作成する
+
+`docker network create todo_api_network`
+
+イメージ削除
+
+`docker rmi todoapi_db`
+
+Docker Volume削除
+
+`docker volume rm mysql_todo_api_volume `
+
+### 参考：本つツールで利用している関連パッケージ
 gin
 
 `go get github.com/gin-gonic/gin`
@@ -57,16 +74,3 @@ cors
 uuid
 
 `go get "github.com/google/uuid"`
-
-### エラー
-ネットワークが未作成
-
-`docker network create todo_api_network`
-
-イメージ削除
-
-`docker rmi todoapi_db`
-
-Docker Volume削除
-
-`docker volume rm mysql_todo_api_volume `
