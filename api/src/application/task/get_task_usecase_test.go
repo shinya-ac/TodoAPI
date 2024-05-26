@@ -2,6 +2,7 @@ package task
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -53,6 +54,50 @@ func TestGetTaskUseCase_Run(t *testing.T) {
 				},
 			},
 			wantErr: false,
+		},
+		{
+			name: "検索ワードでフィルタリングし、DTOを返却すること",
+			input: GetTaskUseCaseInputDto{
+				Offset:     0,
+				PageSize:   10,
+				Status:     strPtr("Pending"),
+				SearchWord: strPtr("テスト"),
+			},
+			mockFunc: func() {
+				mockTaskRepo.EXPECT().Get(gomock.Any(), 0, 10, strPtr("Pending"), strPtr("テスト")).Return([]*taskDomain.Task{
+					{
+						Id:      "46039334-6ffc-4fe3-ab59-f40a7b73b611",
+						Title:   "Todoのテストを行う1",
+						Content: "Todo機能のテストをGo言語で行う1",
+						Status:  "Pending",
+					},
+				}, nil)
+			},
+			want: &GetTaskUseCaseOutputDto{
+				Tasks: []*taskDomain.Task{
+					{
+						Id:      "46039334-6ffc-4fe3-ab59-f40a7b73b611",
+						Title:   "Todoのテストを行う1",
+						Content: "Todo機能のテストをGo言語で行う1",
+						Status:  "Pending",
+					},
+				},
+			},
+			wantErr: false,
+		},
+		{
+			name: "リポジトリのエラーを返すこと",
+			input: GetTaskUseCaseInputDto{
+				Offset:     0,
+				PageSize:   10,
+				Status:     strPtr("Pending"),
+				SearchWord: strPtr(""),
+			},
+			mockFunc: func() {
+				mockTaskRepo.EXPECT().Get(gomock.Any(), 0, 10, strPtr("Pending"), strPtr("")).Return(nil, errors.New("リポジトリエラー"))
+			},
+			want:    nil,
+			wantErr: true,
 		},
 	}
 

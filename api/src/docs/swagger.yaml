@@ -56,6 +56,8 @@ definitions:
         items:
           $ref: '#/definitions/task.Task'
         type: array
+      totalTasks:
+        type: string
     type: object
   task.updateTaskResponse:
     properties:
