@@ -139,6 +139,37 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Task"
+                ],
+                "summary": "Taskを削除する",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "削除するTodoを指定するid",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/task.deleteTaskResponse"
+                        }
+                    }
+                }
             }
         }
     },
@@ -199,6 +230,15 @@ const docTemplate = `{
             }
         },
         "task.createTaskResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "example": "4082ed31-263c-40ec-9d41-e9d274c6bca8"
+                }
+            }
+        },
+        "task.deleteTaskResponse": {
             "type": "object",
             "properties": {
                 "id": {

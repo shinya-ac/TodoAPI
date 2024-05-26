@@ -128,6 +128,19 @@ func TestSave(t *testing.T) {
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
 
+func TestDelete(t *testing.T) {
+	repo, mock, db, ctx := setup(t)
+	defer db.Close()
+
+	mock.ExpectExec("DELETE FROM tasks WHERE id = \\?").
+		WithArgs("46039334-6ffc-4fe3-ab59-f40a7b73b611").
+		WillReturnResult(sqlmock.NewResult(0, 1))
+
+	err := repo.Delete(ctx, "46039334-6ffc-4fe3-ab59-f40a7b73b611")
+	assert.NoError(t, err)
+	assert.NoError(t, mock.ExpectationsWereMet())
+}
+
 func TestGetWithDBError(t *testing.T) {
 	repo, mock, db, ctx := setup(t)
 	defer db.Close()

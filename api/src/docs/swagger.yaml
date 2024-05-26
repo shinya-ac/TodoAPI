@@ -44,6 +44,12 @@ definitions:
         example: 4082ed31-263c-40ec-9d41-e9d274c6bca8
         type: string
     type: object
+  task.deleteTaskResponse:
+    properties:
+      id:
+        example: 4082ed31-263c-40ec-9d41-e9d274c6bca8
+        type: string
+    type: object
   task.getTaskResponse:
     properties:
       tasks:
@@ -117,6 +123,25 @@ paths:
       tags:
       - Task
   /v1/task/{id}:
+    delete:
+      parameters:
+      - description: 削除するTodoを指定するid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/task.deleteTaskResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Taskを削除する
+      tags:
+      - Task
     put:
       parameters:
       - description: 更新するTodoを指定するid
