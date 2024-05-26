@@ -36,12 +36,13 @@ func NewHandler(
 
 // CreateTasks godoc
 // @Summary Taskを登録する
+// @Description パラメーターから新規Todoを作成する
 // @Tags Task
 // @Accept json
 // @Produce json
 // @Param request body CreateTaskParams true "Task登録"
 // @Success 201 {object} createTaskResponse
-// @Router /v1/task [post]
+// @Router /v1/tasks [post]
 // @Security ApiKeyAuth
 func (h handler) CreateTasks(ctx *gin.Context) {
 	logging.Logger.Info("CreateTask実行開始")
@@ -78,15 +79,17 @@ func (h handler) CreateTasks(ctx *gin.Context) {
 	settings.ReturnStatusCreated(ctx, response)
 }
 
-// GetTask godoc
+// GetTasks godoc
 // @Summary Task一覧を取得する
+// @Description 検索ワードとstatusの指定でフィルターをかけてTodoの一覧を取得する
 // @Tags Task
 // @Produce json
 // @Param page query int false "ページ数" default(1)
 // @Param pageSize query int false "ページサイズ" default(100)
-// @Param status query string false "Todoのステータス" default(Pending)
+// @Param status query string false "Todoのステータス(Pending, InProgress, Completed)" default(Pending)
+// @Param searchWord query string false "Todoのタイトルまたは説明文から検索する検索ワード"
 // @Success 200 {object} getTaskResponse
-// @Router /v1/task [get]
+// @Router /v1/tasks [get]
 // @Security ApiKeyAuth
 func (h handler) GetTasks(ctx *gin.Context) {
 	logging.Logger.Info("GetTasks実行開始")
@@ -139,14 +142,16 @@ func (h handler) GetTasks(ctx *gin.Context) {
 	settings.ReturnStatusOK(ctx, response)
 }
 
-// GetTask godoc
+// UpdateTasks godoc
 // @Summary Taskを更新する
+// @Description 指定されたIDに合致するTodoのタイトルやステータスを更新する
 // @Tags Task
+// @Accept json
 // @Produce json
 // @Param id path string true "更新するTodoを指定するid"
 // @Param request body UpdateTaskParams true "Task更新"
 // @Success 200 {object} updateTaskResponse
-// @Router /v1/task/{id} [put]
+// @Router /v1/tasks/{id} [put]
 // @Security ApiKeyAuth
 func (h handler) UpdateTasks(ctx *gin.Context) {
 	logging.Logger.Info("UpdateTasks実行開始")
@@ -189,11 +194,12 @@ func (h handler) UpdateTasks(ctx *gin.Context) {
 
 // DeleteTask godoc
 // @Summary Taskを削除する
+// @Description 指定されたIDに合致するTodoを削除する
 // @Tags Task
 // @Produce json
 // @Param id path string true "削除するTodoを指定するid"
 // @Success 200 {object} deleteTaskResponse
-// @Router /v1/task/{id} [delete]
+// @Router /v1/tasks/{id} [delete]
 // @Security ApiKeyAuth
 func (h handler) DeleteTasks(ctx *gin.Context) {
 	logging.Logger.Info("DeleteTasks実行開始")
