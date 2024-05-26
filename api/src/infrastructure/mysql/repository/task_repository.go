@@ -104,3 +104,32 @@ func (r *TaskRepository) Save(ctx context.Context, task *task.Task) error {
 	_, err := r.db.ExecContext(ctx, query, task.Id, task.Title, task.Content, task.Status)
 	return err
 }
+
+func (r *TaskRepository) Delete(ctx context.Context, id string) error {
+	if id == "nil" {
+		logging.Logger.Error("Idがnil")
+		err := errDomain.NewError("Idがnilです。")
+		return err
+	}
+
+	query := `DELETE FROM tasks WHERE id = ?`
+	result, err := r.db.ExecContext(ctx, query, id)
+	if err != nil {
+		logging.Logger.Error("SQL実行に失敗", "error", err)
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		logging.Logger.Error("SQL実行で影響が発生した行数の取得に失敗しました。", "error", err)
+		return err
+	}
+
+	// SQL実行に影響を受けた行が0→レコードを1件も削除できていない
+	if rowsAffected == 0 {
+		logging.Logger.Error("IDに対応するTodoが見つかりませんでした。", "error", err)
+		return err
+	}
+
+	return nil
+}

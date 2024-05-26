@@ -17,17 +17,20 @@ type handler struct {
 	createTaskUseCase *task.CreateTaskUseCase
 	getTaskUseCase    *task.GetTaskUseCase
 	updateTaskUseCase *task.UpdateTaskUseCase
+	deleteTaskUseCase *task.DeleteTaskUseCase
 }
 
 func NewHandler(
 	createTaskUseCase *task.CreateTaskUseCase,
 	getTaskUseCase *task.GetTaskUseCase,
 	updateTaskUseCase *task.UpdateTaskUseCase,
+	deleteTaskUseCase *task.DeleteTaskUseCase,
 ) handler {
 	return handler{
 		createTaskUseCase: createTaskUseCase,
 		getTaskUseCase:    getTaskUseCase,
 		updateTaskUseCase: updateTaskUseCase,
+		deleteTaskUseCase: deleteTaskUseCase,
 	}
 }
 
@@ -179,6 +182,28 @@ func (h handler) UpdateTasks(ctx *gin.Context) {
 	}
 
 	response := updateTaskResponse{
+		TaskId: dto.Id,
+	}
+	settings.ReturnStatusOK(ctx, response)
+}
+
+func (h handler) DeleteTasks(ctx *gin.Context) {
+	logging.Logger.Info("DeleteTasks実行開始")
+
+	id := ctx.Param("id")
+
+	input := task.DeleteTaskUseCaseInputDto{
+		Id: id,
+	}
+
+	dto, err := h.deleteTaskUseCase.Run(ctx, input)
+	if err != nil {
+		logging.Logger.Error("usecaseの実行に失敗", "error", err)
+		settings.ReturnError(ctx, err)
+		return
+	}
+
+	response := deleteTaskResponse{
 		TaskId: dto.Id,
 	}
 	settings.ReturnStatusOK(ctx, response)
