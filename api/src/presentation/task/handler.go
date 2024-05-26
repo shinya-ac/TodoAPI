@@ -187,6 +187,14 @@ func (h handler) UpdateTasks(ctx *gin.Context) {
 	settings.ReturnStatusOK(ctx, response)
 }
 
+// DeleteTask godoc
+// @Summary Taskを削除する
+// @Tags Task
+// @Produce json
+// @Param id path string true "削除するTodoを指定するid"
+// @Success 200 {object} deleteTaskResponse
+// @Router /v1/task/{id} [delete]
+// @Security ApiKeyAuth
 func (h handler) DeleteTasks(ctx *gin.Context) {
 	logging.Logger.Info("DeleteTasks実行開始")
 
