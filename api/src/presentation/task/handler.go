@@ -1,12 +1,14 @@
 package task
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/shinya-ac/TodoAPI/application/task"
 	"github.com/shinya-ac/TodoAPI/pkg/logging"
+	"github.com/shinya-ac/TodoAPI/pkg/utils"
 	validator "github.com/shinya-ac/TodoAPI/pkg/validator"
 	"github.com/shinya-ac/TodoAPI/presentation/settings"
 )
@@ -89,6 +91,7 @@ func (h handler) GetTasks(ctx *gin.Context) {
 	page := 1
 	pageSize := 100
 	var status *string
+	var searchWord *string
 
 	if p := ctx.Query("page"); p != "" {
 		page, _ = strconv.Atoi(p)
@@ -106,13 +109,18 @@ func (h handler) GetTasks(ctx *gin.Context) {
 			return
 		}
 	}
+	if sw := ctx.Query("searchWord"); sw != "" {
+		normalizedSearchWord := fmt.Sprintf("%%%s%%", utils.NormalizeString(sw))
+		searchWord = &normalizedSearchWord
+	}
 
 	offset := (page - 1) * pageSize
 
 	input := task.GetTaskUseCaseInputDto{
-		Offset:   offset,
-		PageSize: pageSize,
-		Status:   status,
+		Offset:     offset,
+		PageSize:   pageSize,
+		Status:     status,
+		SearchWord: searchWord,
 	}
 
 	dto, err := h.getTaskUseCase.Run(ctx, input)
