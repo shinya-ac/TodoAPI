@@ -16,13 +16,14 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/v1/task": {
+        "/v1/tasks": {
             "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
                 ],
+                "description": "検索ワードとstatusの指定でフィルターをかけてTodoの一覧を取得する",
                 "produces": [
                     "application/json"
                 ],
@@ -48,8 +49,14 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "default": "Pending",
-                        "description": "Todoのステータス",
+                        "description": "Todoのステータス(Pending, InProgress, Completed)",
                         "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Todoのタイトルまたは説明文から検索する検索ワード",
+                        "name": "searchWord",
                         "in": "query"
                     }
                 ],
@@ -68,6 +75,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
+                "description": "パラメーターから新規Todoを作成する",
                 "consumes": [
                     "application/json"
                 ],
@@ -99,12 +107,16 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/task/{id}": {
+        "/v1/tasks/{id}": {
             "put": {
                 "security": [
                     {
                         "ApiKeyAuth": []
                     }
+                ],
+                "description": "指定されたIDに合致するTodoのタイトルやステータスを更新する",
+                "consumes": [
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -146,6 +158,7 @@ const docTemplate = `{
                         "ApiKeyAuth": []
                     }
                 ],
+                "description": "指定されたIDに合致するTodoを削除する",
                 "produces": [
                     "application/json"
                 ],

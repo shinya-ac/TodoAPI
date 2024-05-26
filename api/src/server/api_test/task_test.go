@@ -17,7 +17,7 @@ func TestTask_GetTask(t *testing.T) {
 		expectedBody map[string][]map[string]interface{}
 	}{
 		"正常系": {
-			url:          "/v1/task/",
+			url:          "/v1/tasks/",
 			expectedCode: http.StatusOK,
 			expectedBody: map[string][]map[string]interface{}{
 				"tasks": {
@@ -61,7 +61,7 @@ func TestTask_GetTask(t *testing.T) {
 			},
 		},
 		"正常系_QueryParameter付き": {
-			url:          "/v1/task/?status=Completed",
+			url:          "/v1/tasks/?status=Completed",
 			expectedCode: http.StatusOK,
 			expectedBody: map[string][]map[string]interface{}{
 				"tasks": {

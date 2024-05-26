@@ -70,8 +70,9 @@ info:
   title: Todo API
   version: "1.0"
 paths:
-  /v1/task:
+  /v1/tasks:
     get:
+      description: 検索ワードとstatusの指定でフィルターをかけてTodoの一覧を取得する
       parameters:
       - default: 1
         description: ページ数
@@ -84,9 +85,13 @@ paths:
         name: pageSize
         type: integer
       - default: Pending
-        description: Todoのステータス
+        description: Todoのステータス(Pending, InProgress, Completed)
         in: query
         name: status
+        type: string
+      - description: Todoのタイトルまたは説明文から検索する検索ワード
+        in: query
+        name: searchWord
         type: string
       produces:
       - application/json
@@ -103,6 +108,7 @@ paths:
     post:
       consumes:
       - application/json
+      description: パラメーターから新規Todoを作成する
       parameters:
       - description: Task登録
         in: body
@@ -122,8 +128,9 @@ paths:
       summary: Taskを登録する
       tags:
       - Task
-  /v1/task/{id}:
+  /v1/tasks/{id}:
     delete:
+      description: 指定されたIDに合致するTodoを削除する
       parameters:
       - description: 削除するTodoを指定するid
         in: path
@@ -143,6 +150,9 @@ paths:
       tags:
       - Task
     put:
+      consumes:
+      - application/json
+      description: 指定されたIDに合致するTodoのタイトルやステータスを更新する
       parameters:
       - description: 更新するTodoを指定するid
         in: path
