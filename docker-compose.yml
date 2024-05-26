@@ -41,4 +41,4 @@ volumes:
 
 networks:
   todo_api_network:
-    external: true
+    external: false
