@@ -1,6 +1,7 @@
 package api_test
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -108,6 +109,61 @@ func TestTask_GetTask(t *testing.T) {
 			if diff := cmp.Diff(tt.expectedBody, responseBody); diff != "" {
 				t.Errorf("response body mismatch (-want +got):\n%s", diff)
 			}
+		})
+	}
+}
+
+func TestTask_CreateTask(t *testing.T) {
+	t.Parallel()
+	tests := map[string]struct {
+		body         map[string]interface{}
+		expectedCode int
+		expectedBody map[string]interface{}
+	}{
+		"正常系": {
+			body: map[string]interface{}{
+				"Title":   "Todoのテストを行う1",
+				"Content": "Todo機能のテストをGo言語で行う1",
+			},
+			expectedCode: http.StatusCreated,
+		},
+		"不正なリクエスト": {
+			body: map[string]interface{}{
+				"Title": "",
+			},
+			expectedCode: http.StatusBadRequest,
+			expectedBody: map[string]interface{}{
+				"code": float64(http.StatusBadRequest),
+				"msg":  "Key: 'CreateTaskParams.Title' Error:Field validation for 'Title' failed on the 'required' tag\nKey: 'CreateTaskParams.Content' Error:Field validation for 'Content' failed on the 'required' tag",
+			},
+		},
+	}
+
+	for testName, tt := range tests {
+		tt := tt
+		t.Run(testName, func(t *testing.T) {
+			t.Parallel()
+			bodyBytes, err := json.Marshal(tt.body)
+			if err != nil {
+				t.Fatalf("failed to marshal request body: %v", err)
+			}
+			req := httptest.NewRequest(http.MethodPost, "/v1/tasks/", bytes.NewReader(bodyBytes))
+			req.Header.Set("Content-Type", "application/json")
+			w := httptest.NewRecorder()
+			api.ServeHTTP(w, req)
+
+			if w.Code != tt.expectedCode {
+				t.Errorf("expected status code %d, got %d", tt.expectedCode, w.Code)
+			}
+
+			var responseBody map[string]interface{}
+			if err := json.Unmarshal(w.Body.Bytes(), &responseBody); err != nil {
+				t.Fatalf("failed to unmarshal response body: %v", err)
+			}
+
+			// if diff := cmp.Diff(tt.expectedBody, responseBody); diff != "" {
+			// 	t.Errorf("response body mismatch (-want +got):\n%s", diff)
+			// }
 		})
 	}
 }
