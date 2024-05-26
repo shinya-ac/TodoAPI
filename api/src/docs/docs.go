@@ -268,6 +268,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/task.Task"
                     }
+                },
+                "totalTasks": {
+                    "type": "string"
                 }
             }
         },
