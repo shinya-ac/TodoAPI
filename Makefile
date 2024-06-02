@@ -36,6 +36,9 @@ logs:
 test:
 	cd api/src && go clean -testcache && go test ./...
 
+ut:
+	cd api/src && go clean -testcache && go test ./domain/task/...
+
 # モック生成
 # generate:
 # 	$(DOCKER_COMPOSE_CMD) run --rm api sh -c "cd /app/src && go generate ./..."

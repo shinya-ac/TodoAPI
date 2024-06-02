@@ -1,6 +1,7 @@
 package task_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/shinya-ac/TodoAPI/domain/task"
@@ -21,6 +22,52 @@ func TestNewTask(t *testing.T) {
 		assert.Equal(t, "Pending", tk.Status)
 	})
 
+	t.Run("タイトルが1文字の時に正常に作成できることを確認", func(t *testing.T) {
+		title := "T"
+		content := "Todo機能のテストをGo言語で行う1"
+		tk, err := task.NewTask(title, content)
+		assert.NoError(t, err)
+		assert.NotNil(t, tk)
+		assert.Equal(t, title, tk.GetTitle())
+		assert.Equal(t, content, tk.GetContent())
+		assert.Equal(t, "Pending", tk.Status)
+	})
+
+	t.Run("タイトルが50文字の時に正常に作成できることを確認", func(t *testing.T) {
+		title := "アイウエオカキクケコ"
+		title50 := strings.Repeat(title, 5)
+		content := "Todo機能のテストをGo言語で行う1"
+		tk, err := task.NewTask(title50, content)
+		assert.NoError(t, err)
+		assert.NotNil(t, tk)
+		assert.Equal(t, title50, tk.GetTitle())
+		assert.Equal(t, content, tk.GetContent())
+		assert.Equal(t, "Pending", tk.Status)
+	})
+
+	t.Run("コンテンツが1文字の時に正常に作成できることを確認", func(t *testing.T) {
+		title := "Todoのテストを行う1"
+		content := "T"
+		tk, err := task.NewTask(title, content)
+		assert.NoError(t, err)
+		assert.NotNil(t, tk)
+		assert.Equal(t, title, tk.GetTitle())
+		assert.Equal(t, content, tk.GetContent())
+		assert.Equal(t, "Pending", tk.Status)
+	})
+
+	t.Run("コンテンツが3000文字の時に正常に作成できることを確認", func(t *testing.T) {
+		title := "Todoのテストを行う1"
+		content := "アイウエオカキクケコ"
+		content3000 := strings.Repeat(content, 300)
+		tk, err := task.NewTask(title, content3000)
+		assert.NoError(t, err)
+		assert.NotNil(t, tk)
+		assert.Equal(t, title, tk.GetTitle())
+		assert.Equal(t, content3000, tk.GetContent())
+		assert.Equal(t, "Pending", tk.Status)
+	})
+
 	t.Run("タイトルが不正な場合にエラーを返すことを確認", func(t *testing.T) {
 		title := ""
 		content := "Todo機能のテストをGo言語で行う1"
@@ -30,10 +77,32 @@ func TestNewTask(t *testing.T) {
 		assert.Equal(t, "タイトルの値が不正です。", err.Error())
 	})
 
+	t.Run("タイトルが51文字の時にエラーを返すことを確認", func(t *testing.T) {
+		title := "アイウエオカキクケコ"
+		title50 := strings.Repeat(title, 5)
+		title51 := title50 + "ア"
+		content := "Todo機能のテストをGo言語で行う1"
+		tk, err := task.NewTask(title51, content)
+		assert.Error(t, err)
+		assert.Nil(t, tk)
+		assert.Equal(t, "タイトルの値が不正です。", err.Error())
+	})
+
 	t.Run("コンテンツが不正な場合にエラーを返すことを確認", func(t *testing.T) {
 		title := "Todoのテストを行う1"
 		content := ""
 		tk, err := task.NewTask(title, content)
+		assert.Error(t, err)
+		assert.Nil(t, tk)
+		assert.Equal(t, "説明文の値が不正です。", err.Error())
+	})
+
+	t.Run("コンテンツが3001字の時にエラーを返すことを確認", func(t *testing.T) {
+		title := "Todoのテストを行う1"
+		content := "アイウエオカキクケコ"
+		content3000 := strings.Repeat(content, 300)
+		content3001 := content3000 + "ア"
+		tk, err := task.NewTask(title, content3001)
 		assert.Error(t, err)
 		assert.Nil(t, tk)
 		assert.Equal(t, "説明文の値が不正です。", err.Error())

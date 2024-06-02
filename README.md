@@ -43,7 +43,7 @@ Docker Volume削除
 
 `docker volume rm mysql_todo_api_volume `
 
-### 参考：本つツールで利用している関連パッケージ
+### 参考：本ツールで利用している関連パッケージ
 gin
 
 `go get github.com/gin-gonic/gin`
